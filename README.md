@@ -150,7 +150,33 @@ If you use this repo, please cite the baselines and the dataset.
 
 
 ---
+
+
+Citations
+
+If you use this repo, please cite the baselines and the dataset.
+
+@inproceedings{learning2listen,
+  title={Learning to Listen ...},
+  author={...},
+  booktitle={...},
+  year={...}
+}
+@inproceedings{react2024,
+  title={REACT 2024 Challenge ...},
+  author={...},
+  booktitle={...},
+  year={2024}
+}
+
+```
+
 ---
+
+
+
+---
+
 ## Acknowledgments
 
 We build on TransVAE from *Learning2Listen* and the official REACT 2024 baselines for BeLFusion and REGNN. Thanks to the dataset contributors (NoXI, RECOLA) and the community.
