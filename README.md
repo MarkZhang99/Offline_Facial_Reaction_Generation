@@ -27,30 +27,6 @@ A lightweight, reproducible codebase for conversational facial reaction generati
 
 ---
 
-## Repo structure
-
-```
-.
-├── configs/
-│   ├── transvae.yaml
-│   ├── belfusion_vae.yaml           # stage 1
-│   ├── belfusion_ldm.yaml           # stage 2
-│   ├── regnn_vggish.yaml
-│   └── regnn_wav2vec2.yaml
-├── data/                            # your features here (see below)
-├── scripts/
-│   ├── train_transvae.py
-│   ├── train_belfusion.py           # stage 1 & 2 via config
-│   ├── train_regnn.py
-│   └── evaluate.py
-├── results/
-└── README.md
-```
-
-> If your repo uses different script names/paths, adjust the commands below accordingly.
-
----
-
 ## Environment
 
 * **Python** 3.9
@@ -88,46 +64,44 @@ All streams are aligned to **25 fps** and normalized per session (z-score). We u
 ### 1) TranVAE (3DMM)
 
 ```bash
-python scripts/train_transvae.py \
-  --config configs/transvae.yaml \
-  --data_root ./data \
-  --save_dir ./results/transvae
+cd $L2L_PATH/vqgan/
+python train_vq_transformer.py --config <path_to_config_file>
+
+After training of the VQ-VAE has converged, we can begin training the predictor model that uses this codebook.
+# --config: the config file associated with training the predictor
+# Includes network setup information and codebook information
+# Note, you will have to update this config to point to the correct codebook.
+# See provided config: configs/vq/delta_v6.json
+
+cd $L2L_PATH
+python -u train_vq_decoder.py --config <path_to_config_file>
 ```
 
 ### 2) BeLFusion (3DMM; two-stage)
 
 ```bash
 # Stage 1: VAE
-python scripts/train_belfusion.py \
-  --config configs/belfusion_vae.yaml \
-  --name All_VAEv2_W50
+python train_belfusion.py config=config/1_belfusion_vae.yaml name=All_VAEv2_W50
 
 # Stage 2: LDM (latent diffusion)
-python scripts/train_belfusion.py \
-  --config configs/belfusion_ldm.yaml \
-  --name Belfusion --arch.args.k 10
+python train_belfusion.py config=config/2_belfusion_ldm.yaml name=<VAE NAME> arch.args.k10 arch.args.online=False
 ```
 
 ### 3) REGNN (AU)
 
 ```bash
 # VGGish audio
-python scripts/train_regnn.py \
-  --config configs/regnn_vggish.yaml \
-  --save_dir ./results/regnn_vggish
-
+python feature_extraction.py --split train --type video --data-dir <data-dir> --save-dir <data-dir>
+python feature_extraction.py --split train --type audio --data-dir <data-dir> --save-dir <data-dir>
+bash scripts/train.sh
 # Wav2Vec 2.0 audio (optional)
-python scripts/train_regnn.py \
-  --config configs/regnn_wav2vec2.yaml \
-  --save_dir ./results/regnn_w2v2
-```
-
-### 4) Evaluation (unified)
+python feature_extraction.py --split train --type video --data-dir <data-dir> --save-dir <data-dir>
+python feature_extraction.py --split train --type audio --data-dir <data-dir> --save-dir <data-dir>
+bash scripts/train.sh
+### 4) Evaluation 
 
 ```bash
-python scripts/evaluate.py \
-  --resume ./results/<exp>/best_checkpoint.pth \
-  --split test --no-render
+python evaluate.py  --resume ./results/train_offline/best_checkpoint.pth  --gpu-ids 1  --outdir results/val_offline --split val
 ```
 
 By default we report **FRCorr / FRDist / FRVar / FRDvs** in the main text; **TLCC** is available in logs (frames & seconds @25 fps).
@@ -173,13 +147,7 @@ If you use this repo, please cite the baselines and the dataset.
   booktitle={...},
   year={2024}
 }
-```
 
----
-
-## License
-
-TBD (MIT/Apache-2.0). Replace with your project’s license.
 
 ---
 
