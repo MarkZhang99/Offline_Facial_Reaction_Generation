@@ -1,0 +1,39 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv
+.env
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Cache / logs / outputs
+*.log
+*.tmp
+*.cache/
+logs/
+outputs/
+runs/
+wandb/
+
+# Data & models (ignore raw datasets & arrays by default)
+data/
+datasets/
+checkpoints/
+weights/
+*.npz
+*.npy
+*.ckpt
+*.onnx
+
+# Media (raw heavy stuff)
+*.wav
+*.mp3
+*.mp4
+*.avi
+*.mov
+images/raw/
+
+# Project-specific
+regnn_wac2vec2/Gmm-logs/

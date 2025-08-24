@@ -1,0 +1,16 @@
+numpy
+opencv_python_headless
+pandas
+pillow
+scikit_image
+scikit_video
+scipy
+soundfile
+torch
+torchaudio
+torchvision
+tqdm
+tslearn
+omegaconf
+pytorch-fid
+einops
